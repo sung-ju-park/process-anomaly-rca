@@ -104,12 +104,12 @@ def score_chart(score, now, runs, sel=None):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=t[: now + 1], y=score[: now + 1], mode="lines", line=dict(color=BLUE, width=1.6),
                              name="이상 점수"))
-    fig.add_hline(y=1, line=dict(color=ORANGE, dash="dash"), annotation_text="기준선", annotation_position="top left")
+    fig.add_hline(y=1, line=dict(color=ORANGE, dash="dash"), annotation_text="기준선", annotation_position="bottom right")
     for r in runs:
         if r <= now:
             fig.add_vline(x=r * SAMPLE_MIN / 60, line=dict(color=NAVY if r == sel else "#c9d3dc", width=2 if r == sel else 1))
     fig.update_layout(height=260, margin=dict(l=10, r=10, t=10, b=10),
-                      yaxis=dict(type="log", tickvals=[0.2, 0.5, 1, 2, 5, 10, 20, 50], title="점수 (기준선=1, 로그)"),
+                      yaxis=dict(type="log", tickvals=[0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000], title="점수 (기준선=1, 로그)"),
                       xaxis_title="운전 시간 (h)", showlegend=False, plot_bgcolor="#fafbfc")
     return fig
 

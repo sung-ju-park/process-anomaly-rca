@@ -66,7 +66,7 @@ summary["cluster_k"] = k
 summary["cluster_windows"] = int(len(win_sigs))
 summary["cluster_nmi"] = float(normalized_mutual_info_score(win_names, km.labels_))
 summary["cluster_ari"] = float(adjusted_rand_score(win_names, km.labels_))
-xy = _PCA(2).fit_transform(win_sigs)
+xy = _PCA(2, svd_solver="full").fit_transform(win_sigs)
 pd.DataFrame({"case": win_names, "cluster": km.labels_, "x": xy[:, 0], "y": xy[:, 1]}).to_csv(
     OUT / "tep_window_clusters.csv", index=False, encoding="utf-8-sig")
 
