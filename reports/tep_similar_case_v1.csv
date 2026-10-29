@@ -1,0 +1,22 @@
+﻿fault,eval,top1,top1_sim,top3,hit1,hit3
+1,True,F01,0.995,"['F01', 'F08', 'F13']",True,True
+2,True,F02,0.825,"['F02', 'F14', 'F07']",True,True
+3,False,F07,0.699,"['F07', 'F05', 'F10']",False,False
+4,True,F11,0.583,"['F11', 'F04', 'F12']",False,True
+5,True,F05,0.949,"['F05', 'F07', 'F19']",True,True
+6,True,F06,0.959,"['F06', 'F20', 'F07']",True,True
+7,True,F07,0.997,"['F07', 'F05', 'F20']",True,True
+8,True,F07,0.414,"['F07', 'F19', 'F05']",False,False
+9,False,F07,0.634,"['F07', 'F19', 'F20']",False,False
+10,True,F09,0.465,"['F09', 'F07', 'F14']",False,False
+11,True,F12,0.65,"['F12', 'F08', 'F13']",False,False
+12,True,F12,0.82,"['F12', 'F13', 'F21']",True,True
+13,True,F07,0.598,"['F07', 'F05', 'F19']",False,False
+14,True,F15,0.474,"['F15', 'F01', 'F08']",False,False
+15,False,F21,0.474,"['F21', 'F10', 'F14']",False,False
+16,True,F10,0.567,"['F10', 'F14', 'F09']",False,False
+17,True,F17,0.961,"['F17', 'F11', 'F12']",True,True
+18,True,F09,0.392,"['F09', 'F12', 'F02']",False,False
+19,True,F09,0.42,"['F09', 'F21', 'F02']",False,False
+20,True,F20,0.921,"['F20', 'F07', 'F05']",True,True
+21,True,F19,0.451,"['F19', 'F07', 'F17']",False,False

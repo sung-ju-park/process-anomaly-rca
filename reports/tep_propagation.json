@@ -1,0 +1,202 @@
+{
+ "1": [
+  {
+   "var": "XMEAS16",
+   "minute_from_alarm": -3.0,
+   "unit": "스트리퍼·제품"
+  },
+  {
+   "var": "XMEAS20",
+   "minute_from_alarm": 0.0,
+   "unit": "압축기·재순환"
+  },
+  {
+   "var": "XMEAS7",
+   "minute_from_alarm": 3.0,
+   "unit": "반응기"
+  },
+  {
+   "var": "XMEAS13",
+   "minute_from_alarm": 3.0,
+   "unit": "분리기"
+  },
+  {
+   "var": "XMV5",
+   "minute_from_alarm": 6.0,
+   "unit": "압축기·재순환"
+  },
+  {
+   "var": "XMEAS25",
+   "minute_from_alarm": 6.0,
+   "unit": "반응기"
+  }
+ ],
+ "2": [
+  {
+   "var": "XMEAS30",
+   "minute_from_alarm": -3.0,
+   "unit": "퍼지"
+  },
+  {
+   "var": "XMEAS10",
+   "minute_from_alarm": 3.0,
+   "unit": "퍼지"
+  },
+  {
+   "var": "XMEAS24",
+   "minute_from_alarm": 3.0,
+   "unit": "반응기"
+  },
+  {
+   "var": "XMV6",
+   "minute_from_alarm": 3.0,
+   "unit": "퍼지"
+  }
+ ],
+ "4": [
+  {
+   "var": "XMV10",
+   "minute_from_alarm": -6.0,
+   "unit": "반응기"
+  }
+ ],
+ "5": [
+  {
+   "var": "XMEAS22",
+   "minute_from_alarm": -3.0,
+   "unit": "응축기"
+  },
+  {
+   "var": "XMEAS11",
+   "minute_from_alarm": 0.0,
+   "unit": "분리기"
+  },
+  {
+   "var": "XMEAS4",
+   "minute_from_alarm": 27.0,
+   "unit": "원료 공급"
+  },
+  {
+   "var": "XMEAS18",
+   "minute_from_alarm": 36.0,
+   "unit": "스트리퍼·제품"
+  },
+  {
+   "var": "XMEAS38",
+   "minute_from_alarm": 36.0,
+   "unit": "스트리퍼·제품"
+  },
+  {
+   "var": "XMEAS16",
+   "minute_from_alarm": 36.0,
+   "unit": "스트리퍼·제품"
+  }
+ ],
+ "6": [
+  {
+   "var": "XMEAS1",
+   "minute_from_alarm": -3.0,
+   "unit": "원료 공급"
+  },
+  {
+   "var": "XMV3",
+   "minute_from_alarm": -3.0,
+   "unit": "원료 공급"
+  },
+  {
+   "var": "XMEAS20",
+   "minute_from_alarm": 9.0,
+   "unit": "압축기·재순환"
+  },
+  {
+   "var": "XMEAS13",
+   "minute_from_alarm": 12.0,
+   "unit": "분리기"
+  },
+  {
+   "var": "XMV5",
+   "minute_from_alarm": 12.0,
+   "unit": "압축기·재순환"
+  },
+  {
+   "var": "XMEAS7",
+   "minute_from_alarm": 12.0,
+   "unit": "반응기"
+  }
+ ],
+ "7": [
+  {
+   "var": "XMEAS4",
+   "minute_from_alarm": -6.0,
+   "unit": "원료 공급"
+  },
+  {
+   "var": "XMEAS16",
+   "minute_from_alarm": -3.0,
+   "unit": "스트리퍼·제품"
+  },
+  {
+   "var": "XMV4",
+   "minute_from_alarm": -3.0,
+   "unit": "원료 공급"
+  },
+  {
+   "var": "XMEAS13",
+   "minute_from_alarm": 0.0,
+   "unit": "분리기"
+  },
+  {
+   "var": "XMEAS18",
+   "minute_from_alarm": 0.0,
+   "unit": "스트리퍼·제품"
+  },
+  {
+   "var": "XMEAS21",
+   "minute_from_alarm": 0.0,
+   "unit": "반응기"
+  }
+ ],
+ "11": [
+  {
+   "var": "XMV10",
+   "minute_from_alarm": -6.0,
+   "unit": "반응기"
+  },
+  {
+   "var": "XMEAS9",
+   "minute_from_alarm": 9.0,
+   "unit": "반응기"
+  }
+ ],
+ "12": [
+  {
+   "var": "XMEAS11",
+   "minute_from_alarm": -3.0,
+   "unit": "분리기"
+  },
+  {
+   "var": "XMEAS22",
+   "minute_from_alarm": 9.0,
+   "unit": "응축기"
+  },
+  {
+   "var": "XMEAS21",
+   "minute_from_alarm": 12.0,
+   "unit": "반응기"
+  }
+ ],
+ "14": [],
+ "15": [],
+ "21": [
+  {
+   "var": "XMEAS19",
+   "minute_from_alarm": -24.0,
+   "unit": "스트리퍼·제품"
+  },
+  {
+   "var": "XMV9",
+   "minute_from_alarm": -3.0,
+   "unit": "스트리퍼·제품"
+  }
+ ]
+}
