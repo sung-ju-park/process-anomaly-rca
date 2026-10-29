@@ -22,7 +22,7 @@
 ## 무엇이 다른가
 
 **1. RCA를 '채점'한다.** 보통은 SHAP 그래프를 보여주고 "이 센서가 원인"이라고 끝냅니다. 여기서는 고장 설명과 공정 구조만으로 고장별 정답 원인 변수를 먼저 정해
-[`reports/rca_ground_truth.json`](reports/rca_ground_truth.json)에 저장하고 **git에 먼저 커밋(1a36649)한 뒤** 채점했습니다.
+[`reports/rca_ground_truth.json`](reports/rca_ground_truth.json)에 저장하고 **git에 먼저 커밋(229ff09)한 뒤** 채점했습니다.
 
 | 방법 | 정답 1순위 | 정답 3순위 안 | 공정 단위 1순위 |
 |---|---|---|---|
