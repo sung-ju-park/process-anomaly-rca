@@ -1,0 +1,38 @@
+{
+ "PCA": {
+  "mean_detect_rate_all": 0.6823214285714285,
+  "mean_detect_rate_excl_3_9_15": 0.7868055555555556,
+  "median_delay_min": 60.0,
+  "faults_detected_alarm3": 21,
+  "far_sample": 0.027604166666666666,
+  "far_alarm3": 0.00026041666666666666,
+  "fit_sec": 0.1
+ },
+ "DPCA": {
+  "mean_detect_rate_all": 0.7080357142857143,
+  "mean_detect_rate_excl_3_9_15": 0.8143055555555556,
+  "median_delay_min": 39.0,
+  "faults_detected_alarm3": 21,
+  "far_sample": 0.028645833333333332,
+  "far_alarm3": 0.005989583333333334,
+  "fit_sec": 0.1
+ },
+ "IsolationForest": {
+  "mean_detect_rate_all": 0.4692261904761906,
+  "mean_detect_rate_excl_3_9_15": 0.5296527777777778,
+  "median_delay_min": 126.0,
+  "faults_detected_alarm3": 21,
+  "far_sample": 0.04583333333333333,
+  "far_alarm3": 0.014583333333333334,
+  "fit_sec": 0.9
+ },
+ "AutoEncoder": {
+  "mean_detect_rate_all": 0.6664285714285715,
+  "mean_detect_rate_excl_3_9_15": 0.77,
+  "median_delay_min": 70.5,
+  "faults_detected_alarm3": 20,
+  "far_sample": 0.01640625,
+  "far_alarm3": 0.0010416666666666667,
+  "fit_sec": 1.2
+ }
+}
