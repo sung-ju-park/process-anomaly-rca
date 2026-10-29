@@ -71,6 +71,6 @@ pd.DataFrame({"case": win_names, "cluster": km.labels_, "x": xy[:, 0], "y": xy[:
     OUT / "tep_window_clusters.csv", index=False, encoding="utf-8-sig")
 
 res.to_csv(OUT / "tep_similar_case.csv", index=False, encoding="utf-8-sig")
-json.dump(summary, open(OUT / "tep_signature_summary.json", "w"), ensure_ascii=False, indent=1)
+json.dump(summary, open(OUT / "tep_signature_summary.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 print(res.to_string())
 print(json.dumps(summary, ensure_ascii=False, indent=1))

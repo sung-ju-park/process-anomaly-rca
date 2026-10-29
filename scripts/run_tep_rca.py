@@ -18,7 +18,7 @@ from rca import WINDOW, analyze, grade, propagation  # noqa: E402
 from tep_data import SAMPLE_MIN, load, normal_sets, onset  # noqa: E402
 
 OUT = ROOT / "reports"
-GT = json.load(open(OUT / "rca_ground_truth.json"))["graded"]
+GT = json.load(open(OUT / "rca_ground_truth.json", encoding="utf-8"))["graded"]
 PERSIST = 3
 
 fit, calib, hold = normal_sets()
@@ -77,4 +77,4 @@ if __name__ == "__main__":
         df.to_csv(OUT / "tep_rca_by_fault.csv", index=False, encoding="utf-8-sig")
         summ.to_csv(OUT / "tep_rca_summary.csv", encoding="utf-8-sig")
         prop = {f: propagation(r.onset_min).to_dict("records") for f, r in details.items()}
-        json.dump(prop, open(OUT / "tep_propagation.json", "w"), ensure_ascii=False, indent=1)
+        json.dump(prop, open(OUT / "tep_propagation.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)

@@ -183,5 +183,5 @@ wk_med = pd.DataFrame(Zall[cols].values, columns=cols)
 wk_med["week"] = wk
 wk_med.groupby("week").median().reset_index().to_csv(OUT / "secom_weekly_sensor_median.csv",
                                                       index=False, encoding="utf-8-sig")
-json.dump(summary, open(OUT / "secom_summary.json", "w"), ensure_ascii=False, indent=1, default=str)
+json.dump(summary, open(OUT / "secom_summary.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1, default=str)
 print(json.dumps(summary, ensure_ascii=False, indent=1, default=str))

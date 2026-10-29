@@ -70,5 +70,5 @@ summary = {
     }
     for m in MODELS
 }
-json.dump(summary, open(OUT / "tep_detection_summary.json", "w"), ensure_ascii=False, indent=1)
+json.dump(summary, open(OUT / "tep_detection_summary.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 print(json.dumps(summary, ensure_ascii=False, indent=1))

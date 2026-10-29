@@ -1,5 +1,6 @@
 @echo off
 chcp 65001 > nul
+set PYTHONUTF8=1
 cd /d "%~dp0"
 if not exist .venv (
   echo 먼저 1_분석_실행.bat 을 실행해 주세요.
