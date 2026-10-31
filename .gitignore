@@ -3,3 +3,6 @@ __pycache__/
 .venv/
 .venv/
 app_*.png
+reports/llm_report_eval.csv
+reports/llm_report_eval.json
+reports/llm_report_samples.json

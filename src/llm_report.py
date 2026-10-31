@@ -334,6 +334,14 @@ def verify(brief: dict, facts: dict) -> list[str]:
             for n in re.findall(r"(\d+(?:\.\d+)?) ?σ", s):
                 if row is None or float(n) not in _rounds([row["정상대비_시그마"]]):
                     errs.append(f"값 불일치: {n}σ는 {name}의 정상 대비 변화가 아님")
+        if "기여도" in s and labs:                      # '기여도가 가장 큰/작은 X' → 실제 최대/최소여야 함
+            name = labs[0][1]
+            top = max(cands, key=lambda r: r["기여도비중_퍼센트"])["이름"]
+            low = min(cands, key=lambda r: r["기여도비중_퍼센트"])["이름"]
+            if re.search(r"가장\s?(큰|크|높)", s) and not _same(name, top):
+                errs.append(f"최상급 오류: 기여도가 가장 큰 후보는 {top}")
+            if re.search(r"가장\s?(작|낮)", s) and not _same(name, low):
+                errs.append(f"최상급 오류: 기여도가 가장 작은 후보는 {low}")
         if re.search(r"원인(?! 미공개)", s) and labs and not _same(labs[0][1], cands[0]["이름"]):
             errs.append(f"원인 대상 불일치: 원인 후보 1순위는 {cands[0]['이름']}")
 

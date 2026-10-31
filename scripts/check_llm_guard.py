@@ -2,7 +2,7 @@
 
 1) 정상 문장(템플릿)은 모든 고장에서 통과해야 한다 → 검증기가 멀쩡한 문장을 막지 않는지
 2) 일부러 틀린 내용을 한 가지씩 넣은 문장은 모두 걸러져야 한다 → 틀린 내용을 잡는지
-   틀린 내용 13종 중 '입력 항목 이름 노출'부터는 1·2차 평가에서 실제 LLM이 저지른 유형이다.
+   틀린 내용 14종 중 '입력 항목 이름 노출'부터는 1·2차 평가에서 실제 LLM이 저지른 유형이다.
 """
 import copy
 import json
@@ -55,6 +55,9 @@ def mutations(b: dict, facts: dict):
     if wrong_unit:
         yield "공정 단위 바꿔치기", add(f"{c1['이름']} ({wrong_unit})의 변화가 큼")
     yield "인과 단정", add(f"{c1['이름']} 때문에 경보가 울림")
+    small = min(c, key=lambda r: r["기여도비중_퍼센트"])
+    if small["이름"] != max(c, key=lambda r: r["기여도비중_퍼센트"])["이름"]:
+        yield "최상급 오류", add(f"{small['이름']}은 기여도가 가장 큰 후보")
 
 
 E = Engine()

@@ -6,7 +6,8 @@
    "변수 코드 노출": 18,
    "점검 목록 밖 항목": 10,
    "입력 항목 이름 노출": 6,
-   "단정·인과 표현": 3
+   "단정·인과 표현": 3,
+   "최상급 오류": 1
   },
   "detail": [
    {
@@ -128,6 +129,7 @@
     "pass_now": false,
     "errors": [
      "변수 코드 노출: XMEAS19",
+     "최상급 오류: 기여도가 가장 큰 후보는 스트리퍼 스팀 밸브",
      "점검 목록 밖 항목: XMEAS19 변수의 현재 상태 확인",
      "점검 목록 밖 항목: XMEAS19 변수의 경보기준 시간을 확인하고 조정",
      "점검 목록 밖 항목: XMEAS19 변수의 정상대비 시그마 값을 확인"
@@ -172,8 +174,9 @@
  },
  "v2": {
   "passed_then": 12,
-  "pass_under_current_rules": 9,
+  "pass_under_current_rules": 6,
   "drafts_failing_each_rule": {
+   "최상급 오류": 4,
    "순서 불일치": 2,
    "단정·인과 표현": 1
   },
@@ -192,7 +195,8 @@
     "case": "F03",
     "pass_now": false,
     "errors": [
-     "순서 불일치: 가장 먼저 벗어난 변수는 스트리퍼 온도"
+     "순서 불일치: 가장 먼저 벗어난 변수는 스트리퍼 온도",
+     "최상급 오류: 기여도가 가장 큰 후보는 퍼지 가스 성분 D"
     ]
    },
    {
@@ -209,13 +213,17 @@
    },
    {
     "case": "F07",
-    "pass_now": true,
-    "errors": []
+    "pass_now": false,
+    "errors": [
+     "최상급 오류: 기여도가 가장 큰 후보는 A·C 원료 유량 밸브 (stream 4)"
+    ]
    },
    {
     "case": "F08",
-    "pass_now": true,
-    "errors": []
+    "pass_now": false,
+    "errors": [
+     "최상급 오류: 기여도가 가장 큰 후보는 퍼지 가스 성분 C"
+    ]
    },
    {
     "case": "F11",
@@ -234,8 +242,10 @@
    },
    {
     "case": "F16",
-    "pass_now": true,
-    "errors": []
+    "pass_now": false,
+    "errors": [
+     "최상급 오류: 기여도가 가장 큰 후보는 스트리퍼 스팀 밸브"
+    ]
    },
    {
     "case": "F20",
@@ -243,6 +253,104 @@
     "errors": [
      "단정·인과 표현: 인해"
     ]
+   }
+  ]
+ },
+ "v3": {
+  "passed_then": 17,
+  "pass_under_current_rules": 15,
+  "drafts_failing_each_rule": {
+   "최상급 오류": 2
+  },
+  "detail": [
+   {
+    "case": "F01",
+    "pass_now": true,
+    "errors": []
+   },
+   {
+    "case": "F02",
+    "pass_now": true,
+    "errors": []
+   },
+   {
+    "case": "F04",
+    "pass_now": true,
+    "errors": []
+   },
+   {
+    "case": "F05",
+    "pass_now": true,
+    "errors": []
+   },
+   {
+    "case": "F06",
+    "pass_now": true,
+    "errors": []
+   },
+   {
+    "case": "F07",
+    "pass_now": true,
+    "errors": []
+   },
+   {
+    "case": "F08",
+    "pass_now": false,
+    "errors": [
+     "최상급 오류: 기여도가 가장 큰 후보는 퍼지 가스 성분 C"
+    ]
+   },
+   {
+    "case": "F11",
+    "pass_now": true,
+    "errors": []
+   },
+   {
+    "case": "F12",
+    "pass_now": true,
+    "errors": []
+   },
+   {
+    "case": "F13",
+    "pass_now": true,
+    "errors": []
+   },
+   {
+    "case": "F14",
+    "pass_now": true,
+    "errors": []
+   },
+   {
+    "case": "F15",
+    "pass_now": true,
+    "errors": []
+   },
+   {
+    "case": "F16",
+    "pass_now": true,
+    "errors": []
+   },
+   {
+    "case": "F17",
+    "pass_now": true,
+    "errors": []
+   },
+   {
+    "case": "F18",
+    "pass_now": true,
+    "errors": []
+   },
+   {
+    "case": "F19",
+    "pass_now": false,
+    "errors": [
+     "최상급 오류: 기여도가 가장 작은 후보는 압축기 일"
+    ]
+   },
+   {
+    "case": "F20",
+    "pass_now": true,
+    "errors": []
    }
   ]
  }
