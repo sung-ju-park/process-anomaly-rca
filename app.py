@@ -248,8 +248,9 @@ elif page == "모니터링 · 원인 분석":
 
         # ---- 추가 기능: 로컬 LLM 점검 보고서 초안
         st.markdown("#### 점검 보고서 초안 (로컬 LLM)")
-        st.caption(f"분석 결과(숫자·변수·사례)만 로컬 LLM({llm_report.MODEL})에 넘겨 문장으로 옮깁니다. "
-                   "입력에 없는 숫자·변수·사례가 나오면 1번 다시 쓰게 하고, 그래도 틀리면 템플릿 문장으로 대체합니다.")
+        st.caption(f"의심 원인·유사 사례는 분석 결과 그대로 쓰고, 요약·근거·우선 점검 문장만 로컬 LLM({llm_report.MODEL})이 씁니다. "
+                   "LLM 문장은 숫자·단위·변수 이름·벗어난 순서·점검 목록을 코드로 대조해, 틀리면 1번 다시 쓰게 하고 "
+                   "그래도 틀리면 템플릿 문장으로 대체합니다.")
         if st.button("🤖 초안 만들기", key=f"btn_{key}"):
             with st.spinner("로컬 LLM이 작성 중입니다 (CPU 노트북 기준 수십 초)…"):
                 st.session_state[key] = llm_report.make_brief(F)

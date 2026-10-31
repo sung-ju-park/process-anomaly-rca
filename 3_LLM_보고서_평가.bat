@@ -25,7 +25,7 @@ if not exist .venv (
   exit /b 1
 )
 call .venv\Scripts\activate.bat
-echo [1/2] 검증기 점검 (LLM 없이, 지어낸 내용을 잡아내는지)
+echo [1/2] 검증기 점검 (LLM 없이, 틀린 내용을 잡아내는지)
 python scripts\check_llm_guard.py
 echo.
 echo [2/2] 고장 21종 경보에 대해 로컬 LLM 보고서 초안 작성·검증 (CPU 노트북 기준 20~40분)

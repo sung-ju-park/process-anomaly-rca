@@ -60,7 +60,7 @@ def _brief_html(b) -> str:
     """로컬 LLM 점검 보고서 초안 (llm_report.Brief). 검증 결과를 함께 표시한다."""
     c = b.content
     if b.source == "llm":
-        tag = f"<span class='tag ok'>로컬 LLM({html.escape(b.model)}) 작성 · 숫자·변수 대조 검증 통과</span>"
+        tag = f"<span class='tag ok'>요약·근거·우선 점검: 로컬 LLM({html.escape(b.model)}) 작성, 검증 통과</span>"
     else:
         tag = f"<span class='tag fb'>템플릿 문장 · {html.escape(b.note)}</span>"
 
@@ -124,6 +124,6 @@ def render(f: Finding, X: np.ndarray, sc, title: str = "공정 이상 RCA 리포
 <h2>유사 과거 사례</h2>
 <table><tr><th>사례</th><th>고장 내용</th><th>유형</th><th>유사도</th></tr>{sims}</table>
 <h2>점검 권고</h2><ul>{checks}</ul>
-<div class="foot">{"점검 보고서 초안은 로컬 LLM이 계산값을 문장으로 옮긴 것이며, 입력에 없는 숫자·변수·사례가 있으면 버리고 템플릿 문장을 씁니다. 나머지 문장과 수치는 계산값으로 채운 템플릿입니다." if brief is not None else "이 리포트의 문장과 수치는 모두 계산값으로 채운 템플릿입니다."} 원인 '후보'이며 현장 확인이 필요합니다.
+<div class="foot">{"점검 보고서 초안의 의심 원인·유사 사례는 분석 결과 그대로이고, 요약·근거·우선 점검은 로컬 LLM이 계산값을 문장으로 옮긴 것입니다. LLM 문장은 숫자·단위·변수·순서·점검 목록을 코드로 대조해 하나라도 틀리면 버리고 템플릿 문장을 씁니다. 나머지 문장과 수치는 계산값으로 채운 템플릿입니다." if brief is not None else "이 리포트의 문장과 수치는 모두 계산값으로 채운 템플릿입니다."} 원인 '후보'이며 현장 확인이 필요합니다.
 데이터: Tennessee Eastman Process 벤치마크 (Downs &amp; Vogel 1993; Braatz 연구실 공개 데이터).</div>
 </div></body></html>"""

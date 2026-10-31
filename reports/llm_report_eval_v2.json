@@ -1,0 +1,21 @@
+{
+ "model": "qwen2.5:3b",
+ "run_at": "2026-10-31 12:43",
+ "machine": "Intel64 Family 6 Model 186 Stepping 3, GenuineIntel",
+ "n_alarms": 21,
+ "first_try_pass": 7,
+ "pass_after_retry": 12,
+ "fallback_template": 9,
+ "attempts_failing_each_rule": {
+  "의심원인 불일치": 14,
+  "없는 공정 단위": 7,
+  "형식 오류": 7,
+  "점검 목록 밖 항목": 3,
+  "근거 없는 숫자": 1,
+  "단위 불일치": 1,
+  "없는 변수 이름": 1,
+  "없는 과거 사례": 1,
+  "유사사례 불일치": 1
+ },
+ "median_seconds": 63.3
+}
