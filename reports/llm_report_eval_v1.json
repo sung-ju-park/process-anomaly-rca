@@ -1,0 +1,17 @@
+{
+ "model": "qwen2.5:3b",
+ "run_at": "2026-10-31 12:10",
+ "machine": "Intel64 Family 6 Model 186 Stepping 3, GenuineIntel",
+ "n_alarms": 21,
+ "first_try_pass": 16,
+ "pass_after_retry": 18,
+ "fallback_template": 3,
+ "violation_types": {
+  "유사사례가 1위 사례(F01)와 다름": 2,
+  "유사사례가 1위 사례(F18)와 다름": 2,
+  "유사사례가 1위 사례(F19)와 다름": 2,
+  "유사사례가 1위 사례(F08)와 다름": 1,
+  "유사사례가 1위 사례(F09)와 다름": 1
+ },
+ "median_seconds": 38.7
+}

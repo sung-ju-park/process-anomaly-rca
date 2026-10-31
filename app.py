@@ -14,6 +14,7 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "src"))
 from engine import CHECKLIST, Engine  # noqa: E402
+import llm_report  # noqa: E402
 from report import render  # noqa: E402
 from tep_data import SAMPLE_MIN, TEST_ONSET, load  # noqa: E402
 from tep_meta import COLS, FAULTS, GROUND_TRUTH, UNIT_OF, label  # noqa: E402
@@ -240,8 +241,34 @@ elif page == "모니터링 · 원인 분석":
             st.markdown("#### 점검 권고")
             for u in dict.fromkeys(F.causes.head(3)["공정 단위"]):
                 st.markdown(f"**{u}** — " + ", ".join(CHECKLIST[u]))
-            st.download_button("📄 RCA 리포트 내려받기 (HTML)", render(F, X, E.mon.sc).encode("utf-8"),
+            key = f"brief_{f}_{sel}"
+            st.download_button("📄 RCA 리포트 내려받기 (HTML)",
+                               render(F, X, E.mon.sc, brief=st.session_state.get(key)).encode("utf-8"),
                                file_name=f"rca_report_{f:02d}_{sel}.html", mime="text/html", use_container_width=True)
+
+        # ---- 추가 기능: 로컬 LLM 점검 보고서 초안
+        st.markdown("#### 점검 보고서 초안 (로컬 LLM)")
+        st.caption(f"분석 결과(숫자·변수·사례)만 로컬 LLM({llm_report.MODEL})에 넘겨 문장으로 옮깁니다. "
+                   "입력에 없는 숫자·변수·사례가 나오면 1번 다시 쓰게 하고, 그래도 틀리면 템플릿 문장으로 대체합니다.")
+        if st.button("🤖 초안 만들기", key=f"btn_{key}"):
+            with st.spinner("로컬 LLM이 작성 중입니다 (CPU 노트북 기준 수십 초)…"):
+                st.session_state[key] = llm_report.make_brief(F)
+            st.rerun()
+        b = st.session_state.get(key)
+        if b is not None:
+            c = b.content
+            if b.source == "llm":
+                st.success(f"로컬 LLM 작성 · 검증 통과 (시도 {b.attempts}회, {b.seconds}초)")
+            else:
+                st.warning(f"템플릿 문장으로 대체 — {b.note}")
+            st.markdown(f"**요약** {c['요약']}  \n**의심 원인** {c['의심원인']}  \n**유사 사례** {c['유사사례']}")
+            g1, g2 = st.columns(2)
+            g1.markdown("**근거**\n" + "\n".join(f"- {x}" for x in c["근거"]))
+            g2.markdown("**우선 점검**\n" + "\n".join(f"- {x}" for x in c["우선점검"]))
+            if any(b.violations):
+                with st.expander("검증에서 걸러진 내용"):
+                    for i, v in enumerate(b.violations, 1):
+                        st.markdown(f"{i}차 시도: " + ("통과" if not v else " / ".join(v)))
         if f in GROUND_TRUTH:
             with st.expander("정답 확인 (채점 기준)"):
                 gt, unit, why = GROUND_TRUTH[f]

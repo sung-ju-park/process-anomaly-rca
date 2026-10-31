@@ -1,0 +1,22 @@
+﻿fault,source,attempts,first_try_pass,seconds,violations
+1,template,2,False,72.1,유사사례가 1위 사례(F01)와 다름 | 유사사례가 1위 사례(F01)와 다름
+2,llm,1,True,38.7,
+3,llm,1,True,33.0,
+4,llm,1,True,33.7,
+5,llm,1,True,43.1,
+6,llm,1,True,42.3,
+7,llm,1,True,44.1,
+8,llm,2,False,66.2,유사사례가 1위 사례(F08)와 다름
+9,llm,1,True,36.6,
+10,llm,1,True,37.1,
+11,llm,1,True,37.8,
+12,template,2,False,63.6,유사사례가 1위 사례(F18)와 다름 | 유사사례가 1위 사례(F18)와 다름
+13,llm,1,True,38.0,
+14,llm,1,True,36.8,
+15,llm,2,False,54.3,유사사례가 1위 사례(F09)와 다름
+16,llm,1,True,38.7,
+17,llm,1,True,37.6,
+18,llm,1,True,34.1,
+19,template,2,False,55.3,유사사례가 1위 사례(F19)와 다름 | 유사사례가 1위 사례(F19)와 다름
+20,llm,1,True,43.7,
+21,llm,1,True,35.9,

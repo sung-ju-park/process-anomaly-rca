@@ -51,7 +51,30 @@ def _spark(values: np.ndarray, t_alarm: int, width=360, height=90, limit: float 
     return "".join(parts)
 
 
-def render(f: Finding, X: np.ndarray, sc, title: str = "공정 이상 RCA 리포트") -> str:
+BRIEF_CSS = """.brief{border:1px solid #c9d3dc;border-radius:8px;padding:10px 14px;margin:10px 0}
+.brief h3{font-size:13px;margin:0 0 6px;color:#0f3d5e}.brief dt{font-weight:700;margin-top:4px}.brief dd{margin:0 0 2px 0}
+.tag.ok{background:#e3f1e7;color:#1d6b3a}.tag.fb{background:#f1f3f5;color:#4b5563}"""
+
+
+def _brief_html(b) -> str:
+    """로컬 LLM 점검 보고서 초안 (llm_report.Brief). 검증 결과를 함께 표시한다."""
+    c = b.content
+    if b.source == "llm":
+        tag = f"<span class='tag ok'>로컬 LLM({html.escape(b.model)}) 작성 · 숫자·변수 대조 검증 통과</span>"
+    else:
+        tag = f"<span class='tag fb'>템플릿 문장 · {html.escape(b.note)}</span>"
+
+    def li(xs):
+        return "<ul>" + "".join(f"<li>{html.escape(str(x))}</li>" for x in xs) + "</ul>"
+    return (f"<style>{BRIEF_CSS}</style><div class='brief'><h3>점검 보고서 초안 {tag}</h3><dl>"
+            f"<dt>요약</dt><dd>{html.escape(c['요약'])}</dd>"
+            f"<dt>의심 원인</dt><dd>{html.escape(c['의심원인'])}</dd>"
+            f"<dt>근거</dt><dd>{li(c['근거'])}</dd>"
+            f"<dt>유사 사례</dt><dd>{html.escape(c['유사사례'])}</dd>"
+            f"<dt>우선 점검</dt><dd>{li(c['우선점검'])}</dd></dl></div>")
+
+
+def render(f: Finding, X: np.ndarray, sc, title: str = "공정 이상 RCA 리포트", brief=None) -> str:
     c = f.causes
     first = f.path.iloc[0] if len(f.path) else None
     top_unit = c.iloc[0]["공정 단위"]
@@ -91,7 +114,7 @@ def render(f: Finding, X: np.ndarray, sc, title: str = "공정 이상 RCA 리포
 <h1>{title}</h1>
 <div class="meta">시나리오: {html.escape(f.scenario)} · 경보 시각: 운전 {f.alarm_min // 60}시간 {f.alarm_min % 60}분 · 생성: {datetime.now():%Y-%m-%d %H:%M} · 탐지: 동적 PCA(T²·SPE), 3회 연속 기준선 초과</div>
 <div class="sum">{summary}</div>
-<h2>원인 후보 Top 3</h2>
+{_brief_html(brief) if brief is not None else ""}<h2>원인 후보 Top 3</h2>
 <table><tr><th>순위</th><th>변수</th><th>공정 단위</th><th>이탈 시작(분)</th><th>기여도 비중(%)</th><th>정상 대비(σ)</th></tr>{rows}</table>
 <div class="meta" style="margin-top:4px">순위 = 재구성 기반 기여도 순위와 '먼저 벗어난 순서'의 평균 (사전에 정한 방법). 이탈 시작은 경보 시점 기준, 음수는 경보 전.</div>
 <h2>이상 전파 경로 (먼저 벗어난 순서)</h2><div class="flow">{flow}</div>
@@ -101,6 +124,6 @@ def render(f: Finding, X: np.ndarray, sc, title: str = "공정 이상 RCA 리포
 <h2>유사 과거 사례</h2>
 <table><tr><th>사례</th><th>고장 내용</th><th>유형</th><th>유사도</th></tr>{sims}</table>
 <h2>점검 권고</h2><ul>{checks}</ul>
-<div class="foot">이 리포트의 문장과 수치는 모두 계산값으로 채운 템플릿입니다. 원인 '후보'이며 현장 확인이 필요합니다.
+<div class="foot">{"점검 보고서 초안은 로컬 LLM이 계산값을 문장으로 옮긴 것이며, 입력에 없는 숫자·변수·사례가 있으면 버리고 템플릿 문장을 씁니다. 나머지 문장과 수치는 계산값으로 채운 템플릿입니다." if brief is not None else "이 리포트의 문장과 수치는 모두 계산값으로 채운 템플릿입니다."} 원인 '후보'이며 현장 확인이 필요합니다.
 데이터: Tennessee Eastman Process 벤치마크 (Downs &amp; Vogel 1993; Braatz 연구실 공개 데이터).</div>
 </div></body></html>"""
