@@ -1,0 +1,69 @@
+{
+  "title": "C-MAPSS FD001 잔존수명(RUL) 예측 평가 기준 (공식 test 실행 전 등록)",
+  "registered": "2026-11-23",
+  "data": {
+    "set": "FD001 (운전 조건 1개, 고장 모드 1개: HPC 열화)",
+    "files": "data/raw/cmapss/{train,test,RUL}_FD001.txt",
+    "sha256": {
+      "train_FD001.txt": "963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8",
+      "test_FD001.txt": "3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851",
+      "RUL_FD001.txt": "a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca"
+    },
+    "expected_rows": {"train": 20631, "test": 13096, "rul": 100, "train_units": 100, "test_units": 100}
+  },
+  "columns": {
+    "drop_settings": "운전 설정 3개는 FD001에서 사실상 상수라 사용하지 않음",
+    "drop_sensor_rule": "학습 데이터에서 고유값이 2개 이하인 센서 제외 (s1, s5, s6, s10, s16, s18, s19)",
+    "sensors": ["s2", "s3", "s4", "s7", "s8", "s9", "s11", "s12", "s13", "s14", "s15", "s17", "s20", "s21"]
+  },
+  "features": {
+    "rule": "모든 특징은 그 시점까지의 값만 사용 (미래 값 사용 금지)",
+    "per_sensor": ["마지막 값", "최근 10사이클 평균", "최근 30사이클 기울기(5사이클 미만이면 0)"],
+    "extra": ["cycle (그 시점까지 운전한 사이클 수)"],
+    "scaling": "Ridge만 표준화, 스케일러는 학습 fold로만 맞춤"
+  },
+  "labels": {
+    "A_cap125": "min(실제 RUL, 125). 상한 125는 결과를 보기 전에 고정",
+    "B_cap_cv": "상한을 {100, 115, 125, 135, 150, 없음} 중 학습 데이터 엔진 단위 교차검증 RMSE로 선택",
+    "C_onset_label": "엔진별 상한 = 그 엔진에서 열화 경보가 울린 시점의 RUL. 경보가 없으면 F",
+    "D_two_stage": "예측 시점에 경보가 아직 없으면 F를 출력, 경보가 있으면 경보 이후 구간만으로 학습한 XGBoost가 예측",
+    "F": "학습 fold 엔진들의 '경보 시점 RUL' 중앙값"
+  },
+  "onset_detector": {
+    "model": "src/detect.py PCAMonitor (PCA T2+SPE, cpv 0.90, lags 0) 재사용",
+    "input": "14개 센서의 최근 10사이클 평균",
+    "healthy_reference": "각 엔진 처음 30사이클을 정상으로 가정",
+    "fit_and_threshold": "학습 fold 엔진을 반으로 나눠(seed 0) 한쪽으로 PCA 학습, 다른 쪽 처음 30사이클의 99% 분위수로 기준선",
+    "alarm": "점수 > 1이 5사이클 연속이면 경보, 경보 시점 = 5번째 사이클",
+    "note": "C-MAPSS에는 열화 시작 시점 정답이 없으므로 탐지 '정확도'는 보고하지 않음. 처음 30사이클 안 오경보 수와 경보 시점 RUL 분포만 보고"
+  },
+  "models": {
+    "constant": "학습 라벨 평균",
+    "ridge": "alpha 1.0",
+    "xgboost": {"n_estimators": 500, "max_depth": 4, "learning_rate": 0.03, "subsample": 0.8, "colsample_bytree": 0.8, "min_child_weight": 5, "seeds": [0, 1, 2, 3, 4]},
+    "interval": "XGBoost 분위수 회귀(0.1, 0.9, 라벨 A)로 80% 예측 구간",
+    "no_tuning": "하이퍼파라미터 탐색은 하지 않음. 교차검증으로 고르는 것은 B의 상한 하나뿐"
+  },
+  "validation": {
+    "split": "학습 엔진 100대를 GroupKFold 5겹 (엔진 단위)",
+    "truncation": "검증 엔진마다 잘린 시점 5개를 seed 0으로 뽑음 (31사이클 이상, 수명 이내). 잘린 시점의 마지막 사이클 하나만 평가",
+    "leak_demo": "같은 모델을 행 단위 무작위 KFold로 평가한 값도 함께 기록 (비교용, 선택에 쓰지 않음)"
+  },
+  "test": {
+    "rule": "공식 test 100대는 엔진별 마지막 사이클만, 모든 설정을 정한 뒤 1회만 평가",
+    "primary_metric": "RMSE (공식 정답 RUL_FD001, 상한 없음)",
+    "secondary": ["RMSE (정답에 상한 125 적용)", "NASA score (d=예측-실제, d<0: exp(-d/13)-1, d>=0: exp(d/10)-1, 합계)", "늦게 예측한 비율 (예측 > 실제)", "실제 RUL 구간별 RMSE (<=30, 31~80, >80)", "D는 경보 있음/없음 엔진별 RMSE", "XGBoost는 seed 5개 평균과 표준편차", "80% 구간의 실제 포함 비율과 평균 폭 (실제 RUL<=125 엔진과 전체)"]
+  },
+  "hypotheses": {
+    "H1": "라벨 A에서 XGBoost < Ridge < 상수 (RMSE)",
+    "H2": "행 무작위 KFold RMSE가 엔진 단위 검증 RMSE보다 낮게 나온다 (누수 확인용, 학습 데이터만)",
+    "H3": "C와 D는 전체 RMSE에서 A를 이기지 못한다. D는 경보가 울린 엔진에서 A보다 낮을 수 있다",
+    "H4": "80% 구간의 실제 포함 비율은 실제 RUL<=125 엔진에서 70~90%",
+    "H5": "물리 근거 예상: HPC 효율·유량 저하(Saxena 외 2008)이면 HPC 출구 온도 T30(s3), LPT 출구 온도 T50(s4), HPC 출구 압력 P30(s7), HPC 출구 정압 Ps30(s11), 연료유량비 phi(s12)가 먼저 벗어난다. 학습 엔진에서 '먼저 벗어난 센서'(src/rca.py 방식: 엔진 처음 30사이클 기준 z, EWMA 0.3, |z|>3 3회 연속)의 과반이 이 다섯 개 안에 든다"
+  },
+  "disclosure": [
+    "이 기준을 정하기 전에 계획 검토 과정에서 검토자가 공식 test로 빠른 실험을 한 번 돌렸고, 그 결과를 보았다: 상한 125에서 RandomForest RMSE 14.8, XGBoost 14.6, 상한 없이 XGBoost 26.3, 열화 경보 간이 점검에서 test 엔진 30대만 마지막 사이클까지 경보. H3의 예상은 이 결과에 영향을 받았다",
+    "C-MAPSS의 센서 추세는 공개 문헌에 알려져 있어 H5는 완전한 블라인드 예측이 아니다",
+    "코드는 대부분 AI 코딩 도구로 작성하고, 기준과 결과는 사람이 확인한다"
+  ]
+}
