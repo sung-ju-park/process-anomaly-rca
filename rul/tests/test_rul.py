@@ -94,3 +94,41 @@ def test_nasa_score_hand_cases():
     assert C.nasa_score([0], [10]) == pytest.approx(np.e - 1)   # 늦은 예측 10
     assert C.nasa_score([13], [0]) == pytest.approx(np.e - 1)   # 이른 예측 13
     assert C.nasa_score([5], [5]) == 0
+
+
+def test_constants_match_protocol():
+    P = C.PROTOCOL
+    assert "min(실제 RUL, 125)" in P["labels"]["A_cap125"] and C.CAP == 125
+    assert "{100, 115, 125, 135, 150, 없음}" in P["labels"]["B_cap_cv"]
+    assert "cpv 0.90" in P["onset_detector"]["model"]
+    assert "5사이클 연속" in P["onset_detector"]["alarm"] and C.ALARM_RUN == 5
+    assert "99% 분위수" in P["onset_detector"]["fit_and_threshold"] and C.ALARM_Q == 0.99
+    assert "처음 30사이클" in P["onset_detector"]["healthy_reference"] and C.HEALTHY_CYCLES == 30
+    assert "31사이클 이상" in P["validation"]["truncation"] and C.MIN_PREFIX == 31
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    import run_rul as R
+    assert R.CAPS == [100, 115, 125, 135, 150, None]
+    assert all(s in P["hypotheses"]["H5"] for s in ["s3", "s4", "s7", "s11", "s12"]) and len(R.H5_EXPECTED) == 5
+
+
+def test_label_onset(data):
+    tr, _, _ = data
+    g = tr[tr.unit.isin([1, 2])].copy()
+    life = g.groupby("unit").life.first()
+    alarm = pd.Series({1: life[1] - 40, 2: np.nan})
+    y = C.label_onset(g, alarm, fallback=60)
+    assert y[g.unit == 1].max() == 40          # 경보 시점 RUL로 잘림
+    assert y[g.unit == 2].max() == 60          # 경보 없으면 fallback
+    assert (y <= g.RUL).all()
+
+
+def test_detector_no_alarm_in_healthy_reference(data):
+    tr, _, _ = data
+    det = C.OnsetDetector().fit(tr, range(1, 101))
+    alarm = det.alarm_cycle(tr)
+    assert (alarm.dropna() > C.HEALTHY_CYCLES).all()
+
+
+def test_bucket_boundaries():
+    b = C.bucket_rmse([30, 31, 80, 81], [30, 31, 80, 81])
+    assert [v["n"] for v in b.values()] == [1, 2, 1]

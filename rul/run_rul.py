@@ -7,6 +7,7 @@
 """
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -23,11 +24,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import cmapss as C  # noqa: E402
 
 OUT = C.ROOT / "rul" / "results"
-OUT.mkdir(parents=True, exist_ok=True)
 P = C.PROTOCOL
 XGB = {k: v for k, v in P["models"]["xgboost"].items() if k != "seeds"}
 SEEDS = P["models"]["xgboost"]["seeds"]
-CAPS = [100, 115, 125, 135, 150, None]
+CAPS = [100, 115, 125, 135, 150, None]   # protocol labels.B_cap_cv
+H5_EXPECTED = ["s3", "s4", "s7", "s11", "s12"]   # protocol hypotheses.H5
+UNITS = np.arange(1, 101)   # FD001 train/test 엔진 번호 (check_data에서 확인)
 
 
 def check_data(tr, te, rul):
@@ -86,16 +88,14 @@ def predict_all(tr, F_tr, F_ev, ev_df, ev_rows, units_tr, seed, cap_b):
 
 # ---------------- 교차검증 (학습 데이터만) ----------------
 def run_cv(tr, F_tr):
-    units = np.arange(1, 101)
-    gkf = GroupKFold(n_splits=5)
-    folds = list(gkf.split(units, groups=units))
+    units = UNITS
+    folds = list(GroupKFold(n_splits=5).split(units, groups=units))
+    evs = [C.truncation_points(tr, units[iva], k=5, seed=0) for _, iva in folds]
     # B의 상한 고르기: XGBoost seed 0, 상한별 RMSE (정답은 상한 없는 실제 RUL)
     cap_rmse = {str(c): [] for c in CAPS}
     rows_y, rows_p = [], {}
-    for k, (itr, iva) in enumerate(folds):
-        u_tr, u_va = units[itr], units[iva]
-        ev = C.truncation_points(tr, u_va, k=5, seed=0)
-        m = tr.unit.isin(u_tr)
+    for (itr, iva), ev in zip(folds, evs):
+        m = tr.unit.isin(units[itr])
         for c in CAPS:
             p = xgb_fit(F_tr[m], C.label_cap(tr.RUL[m], c), 0).predict(F_tr.loc[ev])
             cap_rmse[str(c)].append(C.rmse(tr.RUL.loc[ev], p))
@@ -104,9 +104,8 @@ def run_cv(tr, F_tr):
     cap_b = None if best == "None" else int(best)
 
     infos = []
-    for k, (itr, iva) in enumerate(folds):
+    for (itr, iva), ev in zip(folds, evs):
         u_tr, u_va = units[itr], units[iva]
-        ev = C.truncation_points(tr, u_va, k=5, seed=0)
         pred, fl, info = predict_all(tr, F_tr, F_tr, tr[tr.unit.isin(u_va)], ev, u_tr, 0, cap_b)
         infos.append(info)
         rows_y.append(tr.RUL.loc[ev].to_numpy())
@@ -125,20 +124,17 @@ def run_cv(tr, F_tr):
             p = xgb_fit(F_tr.iloc[a], yA[a], 0).predict(F_tr.iloc[b])
             errs.append((p - yA[b]) ** 2)
         leak[name] = float(np.sqrt(np.mean(np.concatenate(errs))))
-    res = {"cap_cv_rmse": cap_mean, "cap_b": cap_b, "cv": cv, "onset_folds": infos,
-           "leak_check_rmse_vs_cap125_all_rows": leak, "n_eval_points": int(len(y))}
-    (OUT / "cv.json").write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
-    return res
+    return {"cap_cv_rmse": cap_mean, "cap_b": cap_b, "cv": cv, "onset_folds": infos,
+            "leak_check_rmse_vs_cap125_all_rows": leak, "n_eval_points": int(len(y))}
 
 
 # ---------------- 물리 근거 예상 확인 (H5, 학습 데이터만) ----------------
 def first_departure(tr):
-    sys.path.insert(0, str(C.ROOT / "src"))
     from rca import onset_times  # 기존 RCA의 '먼저 벗어난 순서'와 같은 규칙
     base = tr[tr.cycle <= C.HEALTHY_CYCLES]
     mu = base.groupby("unit")[C.SENSORS].mean()
     sd = (base[C.SENSORS] - mu.loc[base.unit].to_numpy()).std()  # 엔진 안 정상 구간 흔들림
-    expected = ["s3", "s4", "s7", "s11", "s12"]
+    expected = H5_EXPECTED
     firsts, in_exp, none = [], 0, 0
     for u, g in tr.groupby("unit"):
         on = onset_times(((g[C.SENSORS] - mu.loc[u]) / sd).to_numpy())
@@ -154,17 +150,19 @@ def first_departure(tr):
 
 
 # ---------------- 공식 test 1회 ----------------
-def run_test(tr, te, rul, F_tr, cap_b):
+def run_test(tr, te, rul, F_tr, cap_b, force=False):
     done = OUT / "test_done.json"
-    if done.exists() and "--force" not in sys.argv:
-        raise SystemExit("공식 test는 이미 1회 실행됨 (rul/results/test_done.json). 다시 돌리려면 --force, 그리고 decision_log에 이유를 적을 것.")
+    if done.exists() and not force:
+        raise SystemExit("공식 test는 이미 1회 실행됨 (rul/results/test_done.json). "
+                         "결과 재현만 확인하려면 --force (rul/README.md '실행' 참고).")
     F_te = C.features(te)
     ev = C.last_rows(te)
-    units = np.arange(1, 101)
-    seeds = {}
+    seeds, fl, info = {}, None, None
     for s in SEEDS:
-        pred, fl, info = predict_all(tr, F_tr, F_te, te, ev, units, s, cap_b)
+        pred, fl_s, info_s = predict_all(tr, F_tr, F_te, te, ev, UNITS, s, cap_b)
         seeds[s] = pred
+        if s == SEEDS[0]:   # 경보 탐지기는 seed와 무관하게 seed 0으로 학습하므로 경보 정보는 seed 0 것을 쓴다
+            fl, info = fl_s, info_s
     names = list(seeds[SEEDS[0]])
     res = {"cap_b": cap_b, "onset": info, "methods": {}}
     for n in names:
@@ -197,7 +195,12 @@ def run_test(tr, te, rul, F_tr, cap_b):
 
 
 def main():
-    stage = sys.argv[1] if len(sys.argv) > 1 else "cv"
+    ap = argparse.ArgumentParser(description="C-MAPSS FD001 RUL 실험")
+    ap.add_argument("stage", choices=["cv", "test"])
+    ap.add_argument("--force", action="store_true", help="test 잠금 파일이 있어도 다시 실행 (재현 확인용)")
+    args = ap.parse_args()
+    stage = args.stage
+    OUT.mkdir(parents=True, exist_ok=True)
     tr, te, rul = C.load()
     check_data(tr, te, rul)
     F_tr = C.features(tr)
@@ -210,7 +213,7 @@ def main():
             print(f"{n:8s} RMSE {r['rmse']:6.2f}  NASA {r['nasa']:9.0f}  late {r['late']:.2f}  {r['by_rul']}")
     elif stage == "test":
         cap_b = json.loads((OUT / "cv.json").read_text(encoding="utf-8"))["cap_b"]
-        res, _ = run_test(tr, te, rul, F_tr, cap_b)
+        res, _ = run_test(tr, te, rul, F_tr, cap_b, force=args.force)
         print(json.dumps(res, ensure_ascii=False, indent=1))
 
 
